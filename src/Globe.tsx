@@ -1,20 +1,14 @@
 import {
   geoPath,
-  geoCentroid,
   geoOrthographic,
   geoGraticule10,
   select,
   drag,
   zoom,
-  geoContains,
 } from 'd3';
 import { land } from './App';
 import { useEffect, useMemo, useRef } from 'react';
-import {
-  throttledRotateProjectionBy,
-  throttledZoomProjectionBy,
-  rotateProjectionTo,
-} from './transformations';
+import { rotateProjectionTo } from './transformations';
 
 export function Globe({ size, country, initialRotation, rotation }) {
   const svgRef = useRef<SVGSVGElement>(null);
