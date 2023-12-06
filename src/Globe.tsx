@@ -33,10 +33,10 @@ export function Globe({ size, country, initialRotation, rotation }) {
   );
   const path = geoPath().projection(projection);
 
+  const graticule = geoGraticule10()
+
   useEffect(() => {
     if (!data.features.length) return;
-
-    const graticule = geoGraticule10()
 
     // Selectors
     const svg = select(svgRef.current);
@@ -83,7 +83,7 @@ export function Globe({ size, country, initialRotation, rotation }) {
     // Update country paths
     countryPaths.data(data.features).join('path').attr('d', path);
     globeCircle.attr('r', projection.scale());
-    graticulePath.attr('d', path);
+    graticulePath.data([graticule]).attr('d', path);
   }, [
     width,
     data,
@@ -93,13 +93,14 @@ export function Globe({ size, country, initialRotation, rotation }) {
     minScroll,
     maxScroll,
     sensitivity,
+    graticule,
   ]);
 
 
   useEffect(() => {
     if (!rotation) return;
 
-    const countryPaths = select(svgRef.current).selectAll('.country-path');
+    const countryPaths = select(svgRef.current).selectAll('.country-path, .graticule');
 
     rotateProjectionTo({
       selection: countryPaths,
@@ -121,7 +122,7 @@ export function Globe({ size, country, initialRotation, rotation }) {
       </defs>
 
       <g>
-        <circle cx={cx} cy={cy} r={initialScale} fill="#e0f2ff" />
+        <circle cx={cx} cy={cy} r={initialScale} stroke="rgba(0, 0, 0, 0.5)" fill="#e0f2ff" />
         {data.features.map(({ id }) => (
           <path
             key={id}
@@ -132,7 +133,6 @@ export function Globe({ size, country, initialRotation, rotation }) {
         ))}
       </g>
 
-      {/* <use xlinkHref="#outline" stroke="rgba(0, 0, 0, 0.5)" fill="#e0f2ff" /> */}
       <path className="graticule" stroke="rgba(0, 0, 0, 0.1)" fill="none" />
       <circle cx={cx} cy={cy} r={initialScale} fill="url(#SphereShade)" opacity=".3" />
     </svg >
