@@ -3,7 +3,7 @@ import { useLayoutEffect, useState, useCallback } from 'react';
 import * as topojson from 'topojson-client';
 import world from '../countrymasks.json';
 import { useWindowSize } from '@uidotdev/usehooks';
-import NiceModal, { useModal } from '@ebay/nice-modal-react';
+import NiceModal from '@ebay/nice-modal-react';
 import { IntroModal } from './IntroModal';
 import { Globe } from './Globe';
 import { geoCentroid } from 'd3-geo';
@@ -30,13 +30,12 @@ export default function App() {
   const [streak, setStreak] = useState(0);
   const [countryIndex, setCountryIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState<string | null>(null);
-  const [showGameOver, setShowGameOver] = useState<boolean>(false);
+  const [showGameOver, setShowGameOver] = useState<boolean | null>(null);
   const [rotation, setRotation] = useState([
     -initialRotation[0],
     -initialRotation[1],
   ]);
   const size = useWindowSize();
-  const modal = useModal(IntroModal);
   const country = countries[countryIndex];
 
   const updateSelectedCountry = useCallback(() => {
@@ -67,10 +66,12 @@ export default function App() {
     }
   }
 
+  function onStart() {
+    setShowGameOver(false);
+  }
+
   useLayoutEffect(() => {
-    if (!modal.visible) {
-      NiceModal.show(IntroModal);
-    }
+    NiceModal.show(IntroModal, { onStart });
   }, []);
 
   return (
@@ -86,7 +87,7 @@ export default function App() {
           Round: {countryIndex + 1}/{numCountries}
         </div>
         <div>
-          <Timer showGameOver={showGameOver} />
+          <Timer gameRunning={showGameOver === false} />
         </div>
         <div>Streak: {streak}</div>
         <div>Correct: {correctGuesses}</div>

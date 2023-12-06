@@ -1,10 +1,11 @@
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { Dialog } from '@reach/dialog';
 
-export const IntroModal = NiceModal.create(() => {
+export const IntroModal = NiceModal.create(({ onStart }) => {
   const modal = useModal();
 
   function startGame() {
+    onStart();
     modal.hide();
   }
 

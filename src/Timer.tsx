@@ -2,7 +2,7 @@ import { useModal } from '@ebay/nice-modal-react';
 import { IntroModal } from './IntroModal';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-export function Timer({ showGameOver }) {
+export function Timer({ gameRunning }) {
   const modal = useModal(IntroModal);
   const [isRunning, setIsRunning] = useState(false);
 
@@ -11,7 +11,6 @@ export function Timer({ showGameOver }) {
   useEffect(() => {
     let intervalId: number;
     let startTime = Date.now();
-    console.log(startTime);
     let time = Date.now();
     if (isRunning) {
       // setting time from 0 to 1 every 10 milisecond using javascript setInterval method
@@ -35,16 +34,13 @@ export function Timer({ showGameOver }) {
   }, [isRunning]);
 
   useEffect(() => {
-    if (showGameOver) {
-      setIsRunning(false);
-    }
-  }, [showGameOver]);
+    console.log('gamerunning', gameRunning);
+    setIsRunning(gameRunning);
+  }, [gameRunning]);
 
-  useLayoutEffect(() => {
-    if (!modal.visible) {
-      setIsRunning(true);
-    }
-  }, [modal.visible]);
-
-  return <p ref={timerRef} className="stopwatch-time" />;
+  return (
+    <p ref={timerRef} className="stopwatch-time">
+      0:00:00.000
+    </p>
+  );
 }
