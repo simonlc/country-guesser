@@ -1,78 +1,90 @@
-import './App.css'
-import { useLayoutEffect, useEffect, useState, useRef, useCallback } from 'react'
-import * as topojson from "topojson-client"
+import './App.css';
+import { useLayoutEffect, useState, useCallback } from 'react';
+import * as topojson from 'topojson-client';
 import world from '../countrymasks.json';
-import { useWindowSize } from "@uidotdev/usehooks";
+import { useWindowSize } from '@uidotdev/usehooks';
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
-import { IntroModal } from './IntroModal'
+import { IntroModal } from './IntroModal';
 import { Globe } from './Globe';
 import { geoCentroid } from 'd3-geo';
+import { GuessInput } from './GuessInput';
+import { weightedShuffle, weights } from './weights';
 
+export const land = topojson.feature(world, world.objects.countrymasks);
+const countriesArray = land.features;
 
-export const land = topojson.feature(world, world.objects.countrymasks)
-const countries = land.features;
+const sortedCountries = weightedShuffle(Object.entries(weights));
 
-function randomizeCountry() {
-  return countries[Math.floor(Math.random() * countries.length)]
-}
+const countries = sortedCountries.map(([countryCode]) => {
+  return countriesArray.find((item) => item.properties.isocode === countryCode);
+});
 
-const initialCountry = randomizeCountry()
-const initialRotation = geoCentroid(initialCountry);
+const initialRotation = geoCentroid(countries[0]);
 
 export default function App() {
-  const [country, setCountry] = useState(initialCountry)
-  const [showAnswer, setShowAnswer] = useState(false)
-  const [rotation, setRotation] = useState([-initialRotation[0], -initialRotation[1]]);
+  const [countryIndex, setCountryIndex] = useState(0);
+  const [showAnswer, setShowAnswer] = useState<string | null>(null);
+  const [rotation, setRotation] = useState([
+    -initialRotation[0],
+    -initialRotation[1],
+  ]);
   const size = useWindowSize();
-  const modal = useModal(IntroModal)
+  const modal = useModal(IntroModal);
+  const country = countries[countryIndex];
 
-  const nameMatches = false;
-
-  const updateSelectedCountry = useCallback(newCountry => {
-    console.log('newCountry', newCountry);
-    setCountry(newCountry);
-    const newRotation = geoCentroid(newCountry)
+  const updateSelectedCountry = useCallback(() => {
+    const newIndex = countryIndex + 1;
+    setCountryIndex(newIndex);
+    const newRotation = geoCentroid(countries[newIndex]);
     setRotation([-newRotation[0], -newRotation[1]]);
-    // const center = geoCentroid(country);
-  }, []);
+  }, [countryIndex]);
 
-  const handleCountryClick = ({ target: { id } }) => {
-    updateSelectedCountry(getCountryById(id));
-  };
-
-  function newCountry(difficulty) {
-    setShowAnswer(false);
-    // setCountry(randomizeCountry);
-    updateSelectedCountry(randomizeCountry())
+  function setNewCountry() {
+    setShowAnswer(null);
+    updateSelectedCountry();
   }
 
-  function handleSubmit(event) {
-    event.preventDefault();
-    setShowAnswer(true);
+  function handleSubmit(term: string) {
+    if (term.toLowerCase() === country.properties.NAME.toLowerCase()) {
+      setShowAnswer('correct');
+    } else {
+      setShowAnswer('incorrect');
+    }
   }
 
   useLayoutEffect(() => {
     if (!modal.visible) {
-      NiceModal.show(IntroModal)
+      NiceModal.show(IntroModal);
     }
   }, []);
 
   return (
     <div className="wrapper">
-      <Globe country={country} size={size} initialRotation={initialRotation} rotation={rotation} onCountryClick={handleCountryClick} />
+      <Globe
+        country={country}
+        size={size}
+        initialRotation={initialRotation}
+        rotation={rotation}
+      />
       <div className="overlay">
-        {showAnswer ?
+        {showAnswer ? (
           <>
-            {nameMatches ? <div className="font-effect-outline correct">Correct!</div> : <div className="font-effect-outline incorrect">Incorrect.</div>}
-            <div className="country-name font-effect-outline">{country.properties.NAME}</div>
-            <button autoFocus type="button" onClick={newCountry}>Next</button>
+            {showAnswer === 'correct' ? (
+              <div className="font-effect-outline correct">Correct!</div>
+            ) : (
+              <div className="font-effect-outline incorrect">Incorrect.</div>
+            )}
+            <div className="country-name font-effect-outline">
+              {country.properties.NAME}
+            </div>
+            <button autoFocus type="button" onClick={setNewCountry}>
+              Next
+            </button>
           </>
-          : <form className="guess-form" onSubmit={handleSubmit}>
-            <input autoFocus className="guess-input" type="text" />
-            <button type="submit">Guess</button>
-          </form>
-        }
+        ) : (
+          <GuessInput onSubmit={handleSubmit} />
+        )}
       </div>
     </div>
-  )
+  );
 }

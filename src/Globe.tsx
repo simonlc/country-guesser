@@ -1,7 +1,15 @@
-// import * as d3 from "d3"
-import { geoPath, geoCentroid, geoOrthographic, geoGraticule10, select, drag, zoom, geoContains } from 'd3';
-import { land } from "./App";
-import { useEffect, useMemo, useRef } from "react";
+import {
+  geoPath,
+  geoCentroid,
+  geoOrthographic,
+  geoGraticule10,
+  select,
+  drag,
+  zoom,
+  geoContains,
+} from 'd3';
+import { land } from './App';
+import { useEffect, useMemo, useRef } from 'react';
 import {
   throttledRotateProjectionBy,
   throttledZoomProjectionBy,
@@ -33,7 +41,7 @@ export function Globe({ size, country, initialRotation, rotation }) {
   );
   const path = geoPath().projection(projection);
 
-  const graticule = geoGraticule10()
+  const graticule = geoGraticule10();
 
   useEffect(() => {
     if (!data.features.length) return;
@@ -45,7 +53,7 @@ export function Globe({ size, country, initialRotation, rotation }) {
     const graticulePath = svg.select('.graticule');
 
     // Drag
-    const dragBehaviour = drag().on('drag', event => {
+    const dragBehaviour = drag().on('drag', (event) => {
       const rotate = projection.rotate();
       const k = sensitivity / projection.scale();
 
@@ -57,7 +65,7 @@ export function Globe({ size, country, initialRotation, rotation }) {
     });
 
     // Zoom
-    const zoomBehaviour = zoom().on('zoom', event => {
+    const zoomBehaviour = zoom().on('zoom', (event) => {
       const scrollValue = event.transform.k;
 
       // Reached max/min zoom
@@ -96,11 +104,12 @@ export function Globe({ size, country, initialRotation, rotation }) {
     graticule,
   ]);
 
-
   useEffect(() => {
     if (!rotation) return;
 
-    const countryPaths = select(svgRef.current).selectAll('.country-path, .graticule');
+    const countryPaths = select(svgRef.current).selectAll(
+      '.country-path, .graticule',
+    );
 
     rotateProjectionTo({
       selection: countryPaths,
@@ -111,9 +120,20 @@ export function Globe({ size, country, initialRotation, rotation }) {
   }, [rotation, path, projection]);
 
   return (
-    <svg ref={svgRef} viewBox={`0 0 ${size.width || 0} ${size.height || 0}`} className="globe">
+    <svg
+      ref={svgRef}
+      viewBox={`0 0 ${size.width || 0} ${size.height || 0}`}
+      className="globe"
+    >
       <defs>
-        <radialGradient id="SphereShade" cx="0.5" cy="0.5" r=".8" fx="0.35" fy="0.25">
+        <radialGradient
+          id="SphereShade"
+          cx="0.5"
+          cy="0.5"
+          r=".8"
+          fx="0.35"
+          fy="0.25"
+        >
           <stop offset="0" stopOpacity="0" />
           <stop offset=".3" stopOpacity="0.1" />
           <stop offset=".5" stopOpacity="0.3" />
@@ -122,19 +142,32 @@ export function Globe({ size, country, initialRotation, rotation }) {
       </defs>
 
       <g>
-        <circle cx={cx} cy={cy} r={initialScale} stroke="rgba(0, 0, 0, 0.5)" fill="#e0f2ff" />
+        <circle
+          cx={cx}
+          cy={cy}
+          r={initialScale}
+          stroke="rgba(0, 0, 0, 0.5)"
+          fill="#e0f2ff"
+        />
         {data.features.map(({ id }) => (
           <path
             key={id}
             id={id}
             className="country-path"
-            stroke="rgba(0, 0, 0, 0.4)" fill={country.id === id ? "#ffd570" : "#aaccb5"}
+            stroke="rgba(0, 0, 0, 0.4)"
+            fill={country.id === id ? '#ffd570' : '#aaccb5'}
           />
         ))}
       </g>
 
       <path className="graticule" stroke="rgba(0, 0, 0, 0.1)" fill="none" />
-      <circle cx={cx} cy={cy} r={initialScale} fill="url(#SphereShade)" opacity=".3" />
-    </svg >
-  )
+      <circle
+        cx={cx}
+        cy={cy}
+        r={initialScale}
+        fill="url(#SphereShade)"
+        opacity=".3"
+      />
+    </svg>
+  );
 }

@@ -4,8 +4,11 @@
   font-weight: 900;
   font-stretch: 100%;
   font-display: swap;
-  src: url(https://fonts.gstatic.com/s/nunitosans/v15/pe0TMImSLYBIv1o4X1M8ce2xCx3yop4tQpF_MeTm0lfUVwoNnq4CLz0_upHZPYsZ51Q42pvrobt1R-tQKr51.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  src: url(https://fonts.gstatic.com/s/nunitosans/v15/pe0TMImSLYBIv1o4X1M8ce2xCx3yop4tQpF_MeTm0lfUVwoNnq4CLz0_upHZPYsZ51Q42pvrobt1R-tQKr51.woff2)
+    format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 body {
@@ -57,7 +60,11 @@ body {
 }
 
 .font-effect-outline {
-  text-shadow:0 1px 1px #000, 0 -1px 1px #000, 1px 0 1px #000, -1px 0 1px #000;
+  text-shadow:
+    0 1px 1px #000,
+    0 -1px 1px #000,
+    1px 0 1px #000,
+    -1px 0 1px #000;
   color: #fff;
 }
 
@@ -65,16 +72,26 @@ body {
   display: block;
 }
 
-  .correct {
-  text-shadow:0 1px 1px green, 0 -1px 1px green, 1px 0 1px green, -1px 0 1px green;
-  }
-  .incorrect {
-  text-shadow:0 1px 1px red, 0 -1px 1px red, 1px 0 1px red, -1px 0 1px red;
-  }
+.correct {
+  text-shadow:
+    0 1px 1px green,
+    0 -1px 1px green,
+    1px 0 1px green,
+    -1px 0 1px green;
+}
+.incorrect {
+  text-shadow:
+    0 1px 1px red,
+    0 -1px 1px red,
+    1px 0 1px red,
+    -1px 0 1px red;
+}
 
 .guess-input {
   margin-top: 20vh;
-  font-size: 24px;
+  input {
+    font-size: 24px;
+  }
 }
 
 .guess-form {
