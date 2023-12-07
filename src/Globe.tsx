@@ -143,15 +143,17 @@ export function Globe({ size, country, initialRotation, rotation }) {
           stroke="rgba(0, 0, 0, 0.5)"
           fill="#e0f2ff"
         />
-        {data.features.map(({ id }) => (
-          <path
-            key={id}
-            id={id}
-            className="country-path"
-            stroke="rgba(0, 0, 0, 0.4)"
-            fill={country.id === id ? '#ffd570' : '#aaccb5'}
-          />
-        ))}
+        {data.features.map(({ id, ...rest }) => {
+          return (
+            <path
+              key={id === '-99' ? rest.properties.name : id}
+              id={id}
+              className="country-path"
+              stroke="rgba(0, 0, 0, 0.4)"
+              fill={country.id === id ? '#ffd570' : '#aaccb5'}
+            />
+          );
+        })}
       </g>
 
       <path className="graticule" stroke="rgba(0, 0, 0, 0.1)" fill="none" />

@@ -22,7 +22,10 @@ function useCountryMatch(term: string) {
       term.trim() === ''
         ? null
         : matchSorter(countries, term, {
-          keys: [(item) => item.NAME],
+          keys: [
+            (item) =>
+              `${item.name}, ${item.nameEn}, ${item.abbr}, ${item.isocode3}, ${item.isocode}, ${item.nameAlt}, ${item.formalName}`,
+          ],
         }),
     [throttledTerm],
   );
@@ -48,7 +51,10 @@ export function GuessInput({ onSubmit }) {
               {results.length > 0 ? (
                 <ComboboxList>
                   {results.slice(0, 10).map((result, index) => (
-                    <ComboboxOption key={index} value={result.NAME} />
+                    <ComboboxOption
+                      key={result.isocode3}
+                      value={result.nameEn}
+                    />
                   ))}
                 </ComboboxList>
               ) : (

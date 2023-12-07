@@ -1,7 +1,7 @@
 import './App.css';
 import { useLayoutEffect, useState, useCallback } from 'react';
 import * as topojson from 'topojson-client';
-import world from '../countrymasks.json';
+import world from '../world-topo.json';
 import { useWindowSize } from '@uidotdev/usehooks';
 import NiceModal from '@ebay/nice-modal-react';
 import { IntroModal } from './IntroModal';
@@ -11,7 +11,7 @@ import { GuessInput } from './GuessInput';
 import { weightedShuffle, weights } from './weights';
 import { Timer } from './Timer';
 
-export const land = topojson.feature(world, world.objects.countrymasks);
+export const land = topojson.feature(world, world.objects.world);
 const countriesArray = land.features;
 
 const sortedCountries = weightedShuffle(Object.entries(weights));
@@ -55,7 +55,7 @@ export default function App() {
   }
 
   function handleSubmit(term: string) {
-    if (term.toLowerCase() === country.properties.NAME.toLowerCase()) {
+    if (term.toLowerCase() === country.properties.nameEn.toLowerCase()) {
       setShowAnswer('correct');
       setCorrectGuesses((total) => total + 1);
       setStreak((total) => total + 1);
@@ -104,7 +104,7 @@ export default function App() {
               <div className="font-effect-outline incorrect">Incorrect.</div>
             )}
             <div className="country-name font-effect-outline">
-              {country.properties.NAME}
+              {country.properties.name}
             </div>
             <button autoFocus type="button" onClick={setNewCountry}>
               Next

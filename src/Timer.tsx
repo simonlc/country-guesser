@@ -34,7 +34,6 @@ export function Timer({ gameRunning }) {
   }, [isRunning]);
 
   useEffect(() => {
-    console.log('gamerunning', gameRunning);
     setIsRunning(gameRunning);
   }, [gameRunning]);
 
