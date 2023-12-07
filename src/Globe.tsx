@@ -5,6 +5,9 @@ import {
   select,
   drag,
   zoom,
+  geoCircle,
+  geoCentroid,
+  geoLength,
 } from 'd3';
 import { land } from './App';
 import { useEffect, useMemo, useRef } from 'react';
@@ -34,6 +37,11 @@ export function Globe({ size, country, initialRotation, rotation }) {
     [width, height],
   );
   const path = geoPath().projection(projection);
+  const smallCountryCircle = geoCircle();
+
+  const countrySize = geoLength(country);
+  const newRotation = geoCentroid(country);
+  smallCountryCircle.center(newRotation).radius(1);
 
   const graticule = geoGraticule10();
 
@@ -45,6 +53,7 @@ export function Globe({ size, country, initialRotation, rotation }) {
     const globeCircle = svg.selectAll('circle');
     const countryPaths = svg.selectAll('.country-path');
     const graticulePath = svg.select('.graticule');
+    const smallCountryCirclePath = svg.select('.small-country-circle');
 
     // Drag
     const dragBehaviour = drag().on('drag', (event) => {
@@ -56,6 +65,7 @@ export function Globe({ size, country, initialRotation, rotation }) {
       path.projection(projection);
       countryPaths.attr('d', path);
       graticulePath.attr('d', path);
+      smallCountryCirclePath.attr('d', path);
     });
 
     // Zoom
@@ -76,6 +86,7 @@ export function Globe({ size, country, initialRotation, rotation }) {
         countryPaths.attr('d', path);
         globeCircle.attr('r', projection.scale());
         graticulePath.attr('d', path);
+        smallCountryCirclePath.attr('d', path);
       }
     });
 
@@ -86,6 +97,7 @@ export function Globe({ size, country, initialRotation, rotation }) {
     countryPaths.data(data.features).join('path').attr('d', path);
     globeCircle.attr('r', projection.scale());
     graticulePath.data([graticule]).attr('d', path);
+    smallCountryCirclePath.data([smallCountryCircle()]).attr('d', path);
   }, [
     width,
     data,
@@ -96,14 +108,13 @@ export function Globe({ size, country, initialRotation, rotation }) {
     maxScroll,
     sensitivity,
     graticule,
+    smallCountryCircle,
   ]);
 
   useEffect(() => {
     if (!rotation) return;
 
-    const countryPaths = select(svgRef.current).selectAll(
-      '.country-path, .graticule',
-    );
+    const countryPaths = select(svgRef.current).selectAll('path');
 
     rotateProjectionTo({
       selection: countryPaths,
@@ -163,6 +174,13 @@ export function Globe({ size, country, initialRotation, rotation }) {
         r={initialScale}
         fill="url(#SphereShade)"
         opacity=".3"
+      />
+
+      <path
+        className="small-country-circle"
+        stroke={0.02 > countrySize ? 'rgba(255, 0, 0, 0.8)' : 'none'}
+        strokeWidth="2"
+        fill="none"
       />
     </svg>
   );
