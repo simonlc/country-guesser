@@ -16,13 +16,24 @@ const countriesArray = land.features;
 
 const sortedCountries = weightedShuffle(Object.entries(weights));
 
-const countries = sortedCountries.map(([countryCode]) => {
+const rawCountries = sortedCountries.map(([countryCode]) => {
   return countriesArray.find((item) => item.properties.isocode === countryCode);
 });
 
-const initialRotation = geoCentroid(countries[0]);
+const initialRotation = geoCentroid(rawCountries[0]);
 
-const numCountries = sortedCountries.length;
+const countriesByDifficulty = {
+  easy: rawCountries.filter(
+    (countryItem) => weights[countryItem.properties.isocode] >= 0.8,
+  ),
+  medium: rawCountries.filter(
+    (countryItem) => weights[countryItem.properties.isocode] >= 0.5,
+  ),
+  hard: rawCountries.filter(
+    (countryItem) => weights[countryItem.properties.isocode] >= 0.3,
+  ),
+  veryHard: [...rawCountries],
+};
 
 export default function App() {
   const [correctGuesses, setCorrectGuesses] = useState(0);
@@ -31,6 +42,7 @@ export default function App() {
   const [countryIndex, setCountryIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState<string | null>(null);
   const [showGameOver, setShowGameOver] = useState<boolean | null>(null);
+  const [countries, setCountries] = useState(countriesByDifficulty.hard);
   const [rotation, setRotation] = useState([
     -initialRotation[0],
     -initialRotation[1],
@@ -39,7 +51,7 @@ export default function App() {
   const country = countries[countryIndex];
 
   const updateSelectedCountry = useCallback(() => {
-    if (countryIndex + 1 < numCountries) {
+    if (countryIndex + 1 < countries.length) {
       const newIndex = countryIndex + 1;
       setCountryIndex(newIndex);
       const newRotation = geoCentroid(countries[newIndex]);
@@ -66,8 +78,11 @@ export default function App() {
     }
   }
 
-  function onStart() {
+  function onStart(difficulty) {
     setShowGameOver(false);
+    setCountries(countriesByDifficulty[difficulty]);
+    const newRotation = geoCentroid(countriesByDifficulty[difficulty][0]);
+    setRotation([-newRotation[0], -newRotation[1]]);
   }
 
   useLayoutEffect(() => {
@@ -84,14 +99,17 @@ export default function App() {
       />
       <div className="ui">
         <div>
-          Round: {countryIndex + 1}/{numCountries}
+          Round: {countryIndex + 1}/{countries.length}
         </div>
         <div>
+          <h1>Country Guesser</h1>
           <Timer gameRunning={showGameOver === false} />
         </div>
-        <div>Streak: {streak}</div>
-        <div>Correct: {correctGuesses}</div>
-        <div>Incorrect: {incorrectGuesses}</div>
+        <div>
+          <div>Streak: {streak}</div>
+          <div>Correct: {correctGuesses}</div>
+          <div>Incorrect: {incorrectGuesses}</div>
+        </div>
       </div>
       <div className="overlay">
         {showGameOver ? (

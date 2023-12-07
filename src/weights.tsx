@@ -53,7 +53,6 @@ export const weights = {
 
   AE: 0.8,
   EE: 0.8,
-  BH: 0.8,
   SA: 0.8,
   HR: 0.8,
   CO: 0.8,
@@ -120,7 +119,6 @@ export const weights = {
   UZ: 0.5,
   DM: 0.5,
   IQ: 0.5,
-  BZ: 0.5,
   CV: 0.5,
   GH: 0.5,
   MM: 0.5,
@@ -129,7 +127,9 @@ export const weights = {
   PK: 0.5,
   NG: 0.5,
   SD: 0.5,
+  BH: 0.5,
 
+  BZ: 0.4,
   BB: 0.4,
   BA: 0.4,
   PW: 0.4,

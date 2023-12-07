@@ -105,5 +105,33 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  padding: 30px;
+  right: 0;
+  display: grid;
+  grid-auto-flow: column;
+  padding-left: 20px;
+  padding-right: 20px;
+  color: black;
+  h1 {
+    margin: 0;
+    margin-top: 5px;
+    font-size: 24px;
+  }
+  & > div:first-child {
+    text-align: left;
+    align-self: center;
+  }
+  & > div:last-child {
+    text-align: right;
+    align-self: center;
+  }
+}
+
+.modal--intro {
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  button {
+    margin-top: 15px;
+  }
 }
