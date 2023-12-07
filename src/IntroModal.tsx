@@ -1,7 +1,7 @@
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { Dialog } from '@reach/dialog';
 import { weights } from './weights';
-import { useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 const weightValues = Object.values(weights);
 const easyCountries = weightValues.filter((weight) => weight >= 0.8).length;
@@ -11,6 +11,14 @@ const veryHardCountries = weightValues.length;
 
 export const IntroModal = NiceModal.create(({ onStart }) => {
   const modal = useModal();
+
+  const inputFocusRef = useRef(null);
+
+  useEffect(() => {
+    if (inputFocusRef.current) {
+      inputFocusRef.current.focus();
+    }
+  }, [inputFocusRef]);
 
   function startGame(event) {
     event.preventDefault();
@@ -35,7 +43,13 @@ export const IntroModal = NiceModal.create(({ onStart }) => {
           {mediumCountries} countries)
         </label>
         <label>
-          <input type="radio" name="difficulty" value="hard" defaultChecked />{' '}
+          <input
+            ref={inputFocusRef}
+            type="radio"
+            name="difficulty"
+            value="hard"
+            defaultChecked
+          />{' '}
           GeoGuessr enjoyer ({hardCountries} countries)
         </label>
         <label>

@@ -39,6 +39,7 @@ export function Globe({ size, country, initialRotation, rotation }) {
   const path = geoPath().projection(projection);
   const smallCountryCircle = geoCircle();
 
+  // TODO or area
   const countrySize = geoLength(country);
   const newRotation = geoCentroid(country);
   smallCountryCircle.center(newRotation).radius(1);

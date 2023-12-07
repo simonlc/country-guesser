@@ -1,14 +1,8 @@
-import {
-  Combobox,
-  ComboboxInput,
-  ComboboxPopover,
-  ComboboxList,
-  ComboboxOption,
-} from '@reach/combobox';
-import '@reach/combobox/styles.css';
 import { land } from './App';
 import { useMemo, useState } from 'react';
 import { useThrottle } from '@uidotdev/usehooks';
+import { Typeahead } from 'react-bootstrap-typeahead';
+// import 'react-bootstrap-typeahead/css/Typeahead.css';
 import { matchSorter } from 'match-sorter';
 
 function useCountryMatch(term: string) {
@@ -21,7 +15,7 @@ function useCountryMatch(term: string) {
     () =>
       term.trim() === ''
         ? null
-        : matchSorter(countries, term, {
+        : matchSorter<(typeof land.features.properties)[0]>(countries, term, {
           keys: [
             (item) =>
               `${item.name}, ${item.nameEn}, ${item.abbr}, ${item.isocode3}, ${item.isocode}, ${item.nameAlt}, ${item.formalName}`,
@@ -32,39 +26,37 @@ function useCountryMatch(term: string) {
 }
 
 export function GuessInput({ onSubmit }) {
-  const [term, setTerm] = useState('');
-  const results = useCountryMatch(term);
-  const handleChange = (event) => setTerm(event.target.value);
+  // const [term, setTerm] = useState('');
+  const [singleSelections, setSingleSelections] = useState<any[]>([]);
+  // const results = useCountryMatch(term);
+  // const handleChange = (event) => setTerm(event.target.value);
+  const countries = land.features.map((countryItem) => countryItem.properties);
+  console.log(singleSelections);
   return (
     <form
       className="guess-form"
       onSubmit={(event) => {
         event.preventDefault();
-        onSubmit(term);
+        // const data = new FormData(event.target);
+        // console.log(data);
+        if (singleSelections.length === 1) {
+          onSubmit(singleSelections[0].nameEn);
+        }
       }}
     >
       <div className="guess-input">
-        <Combobox aria-label="Countries" onSelect={setTerm}>
-          <ComboboxInput autoFocus onChange={handleChange} />
-          {results && (
-            <ComboboxPopover className="shadow-popup">
-              {results.length > 0 ? (
-                <ComboboxList>
-                  {results.slice(0, 10).map((result, index) => (
-                    <ComboboxOption
-                      key={result.isocode3}
-                      value={result.nameEn}
-                    />
-                  ))}
-                </ComboboxList>
-              ) : (
-                <span style={{ display: 'block', margin: 8 }}>
-                  No results found
-                </span>
-              )}
-            </ComboboxPopover>
-          )}
-        </Combobox>
+        <Typeahead
+          id="basic-typeahead-single"
+          labelKey="nameEn"
+          autoFocus
+          minLength={1}
+          onChange={setSingleSelections}
+          options={countries}
+          placeholder="Search country..."
+          caseSensitive={false}
+          ignoreDiacritics={true}
+          selected={singleSelections}
+        />
       </div>
       <button type="submit">Guess</button>
     </form>
