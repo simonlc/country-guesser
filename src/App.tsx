@@ -122,7 +122,7 @@ export default function App() {
               <div className="font-effect-outline incorrect">Incorrect.</div>
             )}
             <div className="country-name font-effect-outline">
-              {country.properties.name}
+              {country.properties.nameEn}
             </div>
             <button autoFocus type="button" onClick={setNewCountry}>
               Next
