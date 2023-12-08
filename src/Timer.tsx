@@ -5,17 +5,16 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 export function Timer({ gameRunning }) {
   const modal = useModal(IntroModal);
   const [isRunning, setIsRunning] = useState(false);
+  const startTime = useRef(Date.now());
 
   const timerRef = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => {
     let intervalId: number;
-    let startTime = Date.now();
-    let time = Date.now();
     if (isRunning) {
       // setting time from 0 to 1 every 10 milisecond using javascript setInterval method
       intervalId = setInterval(() => {
-        time = Date.now() - startTime;
+        const time = Date.now() - startTime.current;
         const hours = Math.floor(time / 3600000);
         const minutes = Math.floor((time % 3600000) / 60000);
         const seconds = Math.floor((time % 60000) / 1000);

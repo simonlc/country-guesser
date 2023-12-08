@@ -103,7 +103,7 @@ export default function App() {
         </div>
         <div>
           <h1>Country Guesser</h1>
-          <Timer gameRunning={showGameOver === false} />
+          <Timer gameRunning={showAnswer === null && showGameOver === false} />
         </div>
         <div>
           <div>Streak: {streak}</div>
