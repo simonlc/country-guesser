@@ -12,6 +12,38 @@ import {
 import { land } from './App';
 import { useEffect, useMemo, useRef } from 'react';
 import { rotateProjectionTo } from './transformations';
+import * as solar from 'solar-calculator';
+
+const theme = {
+  countryOutline: { value: 'rgba(0, 0, 0, 0.4)', label: 'Country Outline' },
+  countryFill: { value: '#aaccb5', label: 'Country Fill' },
+  countryOutlineSelected: {
+    value: 'rgba(0, 0, 0, 0.4)',
+    label: 'Country Outline',
+  },
+  countryFillSelected: { value: '#ffd570', label: 'Country Fill' },
+  oceanFill: { value: '#e0f2ff', label: 'Oceans' },
+  graticule: { value: 'rgba(0, 0, 0, 0.1)', label: 'Graticule' },
+  smallCountryCircle: {
+    value: 'rgba(255, 0, 0, 0.8)',
+    label: 'Small country circle',
+  },
+  bgHaze1: { value: '#0eb7e1', label: 'BG Haze 1' },
+  bgHaze2: { value: '#045181', label: 'BG Haze 2' },
+  bg: { value: 'white', label: 'BG Color' },
+  nightShade: { value: 'rgba(0, 0, 0, 0.2', label: 'Night shade' },
+};
+
+// const theme = {
+//   countryOutline: { value: '#d61f1f', label: 'Country Outline' },
+//   countryFill: { value: '#800a21', label: 'Country Fill' },
+//   oceanFill: { value: '#060623', label: 'Oceans' },
+//   graticule: { value: '#152123', label: 'Graticule' },
+//   bgHaze1: { value: '#0eb7e1', label: 'BG Haze 1' },
+//   bgHaze2: { value: '#045181', label: 'BG Haze 2' },
+//   bg: { value: '#000', label: 'BG Color' },
+//   nightShade: { value: 'rgba(0, 0, 0, 0.2', label: 'Night shade' },
+// };
 
 export function Globe({ size, country, initialRotation, rotation }) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -46,6 +78,41 @@ export function Globe({ size, country, initialRotation, rotation }) {
 
   const graticule = geoGraticule10();
 
+  const antipode = ([longitude, latitude]) => [longitude + 180, -latitude];
+  const night = geoCircle().radius(90).center(antipode(sun()));
+
+  function sun() {
+    const now = new Date();
+    const day = new Date(+now).setUTCHours(0, 0, 0, 0);
+    const t = solar.century(now);
+    const longitude = ((day - now) / 864e5) * 360 - 180;
+    return [longitude - solar.equationOfTime(t) / 4, solar.declination(t)];
+  }
+
+  function haze(alpha = 0.5, r1 = 0, r2 = height / 2 - inset) {
+    context.save();
+    var grd = context.createRadialGradient(
+      width / 3,
+      height / 3,
+      r1,
+      height / 2,
+      height / 2,
+      r2,
+    );
+    grd.addColorStop(0.0, colors.bgHaze1);
+    grd.addColorStop(0.35, colors.bgHaze2);
+    grd.addColorStop(1, colors.bg);
+    // Fill with gradient
+    context.globalAlpha = alpha;
+    context.fillStyle = grd;
+    context.beginPath();
+    context.arc(width / 2, height / 2, r2, 0, 2 * Math.PI, false);
+    context.fill();
+    context.restore();
+  }
+  // haze(0.5, 0, width*1.5)
+  //     haze(0.3, 0, width)
+
   useEffect(() => {
     if (!data.features.length) return;
 
@@ -55,6 +122,7 @@ export function Globe({ size, country, initialRotation, rotation }) {
     const countryPaths = svg.selectAll('.country-path');
     const graticulePath = svg.select('.graticule');
     const smallCountryCirclePath = svg.select('.small-country-circle');
+    const nightShadePath = svg.select('.night-shade');
 
     // Drag
     const dragBehaviour = drag().on('drag', (event) => {
@@ -67,6 +135,7 @@ export function Globe({ size, country, initialRotation, rotation }) {
       countryPaths.attr('d', path);
       graticulePath.attr('d', path);
       smallCountryCirclePath.attr('d', path);
+      nightShadePath.attr('d', path);
     });
 
     // Zoom
@@ -88,6 +157,7 @@ export function Globe({ size, country, initialRotation, rotation }) {
         globeCircle.attr('r', projection.scale());
         graticulePath.attr('d', path);
         smallCountryCirclePath.attr('d', path);
+        nightShadePath.attr('d', path);
       }
     });
 
@@ -99,6 +169,7 @@ export function Globe({ size, country, initialRotation, rotation }) {
     globeCircle.attr('r', projection.scale());
     graticulePath.data([graticule]).attr('d', path);
     smallCountryCirclePath.data([smallCountryCircle()]).attr('d', path);
+    nightShadePath.data([night()]).attr('d', path);
   }, [
     width,
     data,
@@ -130,6 +201,7 @@ export function Globe({ size, country, initialRotation, rotation }) {
       ref={svgRef}
       viewBox={`0 0 ${size.width || 0} ${size.height || 0}`}
       className="globe"
+      style={{ background: theme.bg.value }}
     >
       <defs>
         <radialGradient
@@ -145,43 +217,57 @@ export function Globe({ size, country, initialRotation, rotation }) {
           <stop offset=".5" stopOpacity="0.3" />
           <stop offset=".9" stopOpacity="1" />
         </radialGradient>
+        <filter id="night-blur">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="10" />
+        </filter>
       </defs>
 
+      <circle cx={cx} cy={cy} r={initialScale} fill={theme.oceanFill.value} />
+
+      <path className="graticule" stroke={theme.graticule.value} fill="none" />
+
       <g>
-        <circle
-          cx={cx}
-          cy={cy}
-          r={initialScale}
-          stroke="rgba(0, 0, 0, 0.5)"
-          fill="#e0f2ff"
-        />
         {data.features.map(({ id, ...rest }) => {
           return (
             <path
               key={id === '-99' ? rest.properties.name : id}
               id={id}
               className="country-path"
-              stroke="rgba(0, 0, 0, 0.4)"
-              fill={country.id === id ? '#ffd570' : '#aaccb5'}
+              stroke={
+                country.id === id
+                  ? theme.countryOutlineSelected.value
+                  : theme.countryOutline.value
+              }
+              fill={
+                country.id === id
+                  ? theme.countryFillSelected.value
+                  : theme.countryFill.value
+              }
             />
           );
         })}
       </g>
 
-      <path className="graticule" stroke="rgba(0, 0, 0, 0.1)" fill="none" />
-      <circle
-        cx={cx}
-        cy={cy}
-        r={initialScale}
-        fill="url(#SphereShade)"
-        opacity=".3"
-      />
+      {/* <circle */}
+      {/*   cx={cx} */}
+      {/*   cy={cy} */}
+      {/*   r={initialScale} */}
+      {/*   fill="url(#SphereShade)" */}
+      {/*   opacity=".3" */}
+      {/* /> */}
 
       <path
         className="small-country-circle"
-        stroke={0.02 > countrySize ? 'rgba(255, 0, 0, 0.8)' : 'none'}
+        stroke={0.02 > countrySize ? theme.smallCountryCircle.value : 'none'}
         strokeWidth="2"
         fill="none"
+      />
+
+      <path
+        className="night-shade"
+        strokeWidth="2"
+        fill={theme.nightShade.value}
+        filter="url(#night-blur)"
       />
     </svg>
   );

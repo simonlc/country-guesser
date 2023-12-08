@@ -11,12 +11,16 @@
   },
   "dependencies": {
     "@ebay/nice-modal-react": "^1.2.13",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/material": "^5.14.20",
     "@reach/dialog": "^0.18.0",
+    "@types/autosuggest-highlight": "^3.2.3",
     "@types/d3": "^7.4.3",
     "@types/d3-geo": "^3.1.0",
-    "@types/react-autocomplete": "^1.8.9",
     "@types/topojson-client": "^3.1.4",
     "@uidotdev/usehooks": "^2.4.1",
+    "autosuggest-highlight": "^3.3.4",
     "d3": "^7.8.5",
     "d3-drag": "^3.0.0",
     "d3-geo": "3.1.0",
@@ -25,8 +29,8 @@
     "match-sorter": "^6.3.1",
     "prettier": "^3.1.0",
     "react": "^18.2.0",
-    "react-bootstrap-typeahead": "^6.3.2",
     "react-dom": "^18.2.0",
+    "solar-calculator": "0.3",
     "topojson-client": "3"
   },
   "devDependencies": {
