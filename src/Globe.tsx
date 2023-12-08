@@ -220,6 +220,10 @@ export function Globe({ size, country, initialRotation, rotation }) {
         <filter id="night-blur">
           <feGaussianBlur in="SourceGraphic" stdDeviation="10" />
         </filter>
+
+        <clipPath id="clip">
+          <circle cx={cx} cy={cy} r={initialScale} />
+        </clipPath>
       </defs>
 
       <circle cx={cx} cy={cy} r={initialScale} fill={theme.oceanFill.value} />
@@ -248,14 +252,6 @@ export function Globe({ size, country, initialRotation, rotation }) {
         })}
       </g>
 
-      {/* <circle */}
-      {/*   cx={cx} */}
-      {/*   cy={cy} */}
-      {/*   r={initialScale} */}
-      {/*   fill="url(#SphereShade)" */}
-      {/*   opacity=".3" */}
-      {/* /> */}
-
       <path
         className="small-country-circle"
         stroke={0.02 > countrySize ? theme.smallCountryCircle.value : 'none'}
@@ -263,12 +259,21 @@ export function Globe({ size, country, initialRotation, rotation }) {
         fill="none"
       />
 
-      <path
-        className="night-shade"
-        strokeWidth="2"
-        fill={theme.nightShade.value}
-        filter="url(#night-blur)"
-      />
+      <g clipPath="url(#clip)">
+        <circle
+          cx={cx}
+          cy={cy}
+          r={initialScale}
+          fill="url(#SphereShade)"
+          opacity=".3"
+        />
+        <path
+          className="night-shade"
+          strokeWidth="2"
+          fill={theme.nightShade.value}
+          filter="url(#night-blur)"
+        />
+      </g>
     </svg>
   );
 }
