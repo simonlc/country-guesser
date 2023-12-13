@@ -98,7 +98,16 @@ function AutocompleteHint({ options, value, setValue }) {
       onKeyDown={(event) => {
         if (event.key === 'Tab') {
           if (hint.current) {
-            setInputValue(hint.current);
+            const matchingOption = options.find((option) =>
+              option.nameEn
+                .toLowerCase()
+                .startsWith(hint.current.toLowerCase()),
+            );
+            setInputValue(matchingOption.nameEn);
+            setValue(matchingOption);
+            hint.current = matchingOption.nameEn;
+            setOpen(false);
+
             event.preventDefault();
           }
         }
