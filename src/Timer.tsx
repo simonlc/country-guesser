@@ -1,8 +1,8 @@
 import { useModal } from '@ebay/nice-modal-react';
 import { IntroModal } from './IntroModal';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-export function Timer({ gameRunning }) {
+export function Timer({ gameRunning, isPaused }) {
   const modal = useModal(IntroModal);
   const [isRunning, setIsRunning] = useState(false);
   const startTime = useRef(Date.now());

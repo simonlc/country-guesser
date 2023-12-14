@@ -2,6 +2,7 @@ import './App.css';
 import { useLayoutEffect, useState, useCallback } from 'react';
 import * as topojson from 'topojson-client';
 import world from '../world-topo.json';
+import world110m from '../world-topo-110m.json';
 import { useWindowSize } from '@uidotdev/usehooks';
 import NiceModal from '@ebay/nice-modal-react';
 import { IntroModal } from './IntroModal';
@@ -12,7 +13,12 @@ import { weightedShuffle, weights } from './weights';
 import { Timer } from './Timer';
 
 export const land = topojson.feature(world, world.objects.world);
+export const land110m = topojson.feature(
+  world110m,
+  world110m.objects['world-110m'],
+);
 const countriesArray = land.features;
+// console.log(countriesArray);
 
 const sortedCountries = weightedShuffle(Object.entries(weights));
 
@@ -103,7 +109,7 @@ export default function App() {
         </div>
         <div>
           <h1>Country Guesser</h1>
-          <Timer gameRunning={showAnswer === null && showGameOver === false} />
+          <Timer gameRunning={showGameOver === false} isPaused={showAnswer} />
         </div>
         <div>
           <div>Streak: {streak}</div>
