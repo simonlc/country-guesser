@@ -53,7 +53,7 @@ export function Globe({ size, country, initialRotation, rotation }) {
   const cx = width / 2;
   const cy = height / 2;
 
-  const initialScale = Math.min(size.width, size.height) / 2 - 10;
+  const initialScale = Math.max(Math.min(size.width, size.height) / 2 - 10, 1);
   const maxScroll = 20;
   const minScroll = 0.3;
   const sensitivity = 75;
