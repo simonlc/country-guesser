@@ -28,7 +28,7 @@ export const IntroModal = NiceModal.create(({ onStart }) => {
   }
 
   return (
-    <Dialog isOpen={modal.visible} onDismiss={modal.hide}>
+    <Dialog isOpen={modal.visible}>
       <form className="modal modal--intro" onSubmit={startGame}>
         <h1>Country Guesser</h1>
         <h2>How to play</h2>
@@ -53,8 +53,8 @@ export const IntroModal = NiceModal.create(({ onStart }) => {
           GeoGuessr enjoyer ({hardCountries} countries)
         </label>
         <label>
-          <input type="radio" name="difficulty" value="veryHard" /> Ultra
-          violence ({veryHardCountries} countries)
+          <input type="radio" name="difficulty" value="veryHard" /> Impossible (
+          {veryHardCountries} countries)
         </label>
         <button type="submit">Start</button>
       </form>
