@@ -17,6 +17,7 @@
     "@reach/dialog": "^0.18.0",
     "@types/autosuggest-highlight": "^3.2.3",
     "@types/d3": "^7.4.3",
+    "@types/lodash": "^4.14.202",
     "@types/topojson-client": "^3.1.4",
     "@uidotdev/usehooks": "^2.4.1",
     "autosuggest-highlight": "^3.3.4",

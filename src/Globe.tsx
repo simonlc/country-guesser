@@ -12,7 +12,7 @@ import {
   transition,
 } from 'd3';
 import { land, land110m } from './App';
-import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { rotateProjectionTo } from './transformations';
 import * as solar from 'solar-calculator';
 import { debounce } from '@mui/material';
@@ -261,7 +261,7 @@ export function Globe({ size, country, initialRotation, rotation }) {
   const draw = debounce(() => {
     drawCanvas();
     return true;
-  }, 50);
+  }, 20);
 
   useEffect(() => {
     if (!data.features.length) return;
@@ -363,6 +363,8 @@ export function Globe({ size, country, initialRotation, rotation }) {
     } else {
       const duration = 1000;
       const currentRotate = projection.rotate();
+      if (currentRotate[0] === rotation[0] && currentRotate[1] === rotation[1])
+        return;
 
       path.projection(projection);
       const r = interpolate(currentRotate, rotation);
